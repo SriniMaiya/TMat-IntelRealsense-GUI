@@ -26,7 +26,7 @@ class ConfigMat:
         found_rgb = False
         for s in self.device.sensors:
             if s.get_info(rs.camera_info.name) == "RGB Camera": found_rgb = True
-        if not found_rgb: print(u"\u001b[32m-> RGB camera not found!\u001b[0m")
+        if not found_rgb: print(u"\u001b[32m"+u"-> RGB camera not found!"+"\u001b[0m")
         
         #Enable depth stream of the camera
         self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
@@ -38,65 +38,7 @@ class ConfigMat:
             self.config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
         # Start streaming
         self.pipeline.start(self.config)    
-        print(u"\u001b[34;1m\t= = = = = = = = = =  C A M E R A    I N I T I A L I Z A T I O N  = = = = = = = = = =\n\u001b[0m")
-
-
-        
-    def find_device_that_supports_advanced_mode(self) :
-        DS5_product_ids = ["0AD1", "0AD2", "0AD3", "0AD4", "0AD5", "0AF6", "0AFE", "0AFF", "0B00", "0B01", "0B03", "0B07", "0B3A", "0B5C"]
-
-        ctx = rs.context()
-        devices = ctx.query_devices()
-        for dev in devices:
-            if dev.supports(rs.camera_info.product_id) and str(dev.get_info(rs.camera_info.product_id)) in DS5_product_ids:
-                if dev.supports(rs.camera_info.name):
-                    print(u"\u001b[32m\u2713 Found device that supports advanced mode:", dev.get_info(rs.camera_info.name),u"\u001b[0m")
-                return dev
-        raise Exception(u"->\u001b[31mNo D400 product line device that supports advanced mode was found\u001b[0m")
-
-    def load_settings(self, file_path: str):
-        with open(file_path) as file:
-            as_json_object = json.load(file)
-            if type(next(iter(as_json_object))) != str:
-                as_json_object = {k.encode('utf-8'): v.encode("utf-8") for k, v in as_json_object.items()}
-            json_string = str(as_json_object).replace("'", '\"')
-
-                
-        try:
-            dev = self.find_device_that_supports_advanced_mode()
-            advnc_mode = rs.rs400_advanced_mode(dev)
-            print(u"\u001b[32m\u2713 Advanced mode is", "enabled" if advnc_mode.is_enabled() else u"disabled\u001b[0m")
-        
-            # Loop until we successfully enable advanced mode
-            while not advnc_mode.is_enabled():
-                print(u"\n\u001b[33mTrying to enable advanced mode...")
-                advnc_mode.toggle_advanced_mode(True)
-                # At this point the device will disconnect and re-connect.
-                print(u"Sleeping for 5 seconds...")
-                time.sleep(5)
-                # The 'dev' object will become invalid and we need to initialize it again
-                dev = self.find_device_that_supports_advanced_mode()
-                advnc_mode = rs.rs400_advanced_mode(dev)
-                print(u"\u001b[32m\u2713Advanced mode is", u"enabled" if advnc_mode.is_enabled() else u"disabled\u001b[0m")
-        except Exception as e:
-            print(u"\u001b[31mNo devices found with advanced mode !\u001b[0m")
-            print(e)
-            pass
-        
-        print(u"\n\u001b[36mLoading the settings......\u001b[0m")    
-        advnc_mode.load_json(json_string)
-        self.pipeline = rs.pipeline()
-        self.config = rs.config()
-        print(u"\u001b[32m\u2713 Settings loaded\u001b[0m\n")
-
-        wrapper = rs.pipeline_wrapper(self.pipeline)
-        self.profile = self.config.resolve(wrapper)
-
-        self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-        self.config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-        self.pipeline.start(self.config)    
-
-
+        print(u"\u001b[34;1m"+u"\t= = = = = = = = = =  C A M E R A    I N I T I A L I Z A T I O N  = = = = = = = = = =\n"+u"\u001b[0m")
 
     def get_a_frame(self):
         align_to = rs.stream.color
@@ -114,16 +56,72 @@ class ConfigMat:
 
         return [color_image, depth_color_image]
         
+    def find_device_that_supports_advanced_mode(self) :
+        DS5_product_ids = ["0AD1", "0AD2", "0AD3", "0AD4", "0AD5", "0AF6", "0AFE", "0AFF", "0B00", "0B01", "0B03", "0B07", "0B3A", "0B5C"]
+
+        ctx = rs.context()
+        devices = ctx.query_devices()
+        for dev in devices:
+            if dev.supports(rs.camera_info.product_id) and str(dev.get_info(rs.camera_info.product_id)) in DS5_product_ids:
+                if dev.supports(rs.camera_info.name):
+                    print(u"\u001b[32m\u2713"+u" Found device that supports advanced mode:", dev.get_info(rs.camera_info.name)+u"\u001b[0m")
+                return dev
+        raise Exception(u"->\u001b[31m"+u"No D400 product line device that supports advanced mode was found"+u"\u001b[0m")
+
+    def load_settings(self, file_path: str):
+        with open(file_path) as file:
+            as_json_object = json.load(file)
+            if type(next(iter(as_json_object))) != str:
+                as_json_object = {k.encode('utf-8'): v.encode("utf-8") for k, v in as_json_object.items()}
+            json_string = str(as_json_object).replace("'", '\"')
+
+                
+        try:
+            dev = self.find_device_that_supports_advanced_mode()
+            advnc_mode = rs.rs400_advanced_mode(dev)
+            print(u"\u001b[32m\u2713"+ u" Advanced mode is", "enabled" if advnc_mode.is_enabled() else u"disabled"+u"\u001b[0m")
+        
+            # Loop until we successfully enable advanced mode
+            while not advnc_mode.is_enabled():
+                print(u"\n\u001b[33m"+u"Trying to enable advanced mode...")
+                advnc_mode.toggle_advanced_mode(True)
+                # At this point the device will disconnect and re-connect.
+                print(u"Sleeping for 5 seconds...")
+                time.sleep(5)
+                # The 'dev' object will become invalid and we need to initialize it again
+                dev = self.find_device_that_supports_advanced_mode()
+                advnc_mode = rs.rs400_advanced_mode(dev)
+                print(u"\u001b[32m\u2713"+u"Advanced mode is", u"enabled"+"\u001b[0m" if advnc_mode.is_enabled() else u"disabled"+u"\u001b[0m")
+        except Exception as e:
+            print(u"\u001b[31m"+u"No devices found with advanced mode !"+u"\u001b[0m")
+            print(e)
+            pass
+        
+        print(u"\n\u001b[36m"+u"Loading the settings......"+u"\u001b[0m")    
+        advnc_mode.load_json(json_string)
+        self.pipeline = rs.pipeline()
+        self.config = rs.config()
+        print(u"\u001b[32m\u2713"+u" Settings loaded"+u"\u001b[0m\n")
+
+        wrapper = rs.pipeline_wrapper(self.pipeline)
+        self.profile = self.config.resolve(wrapper)
+
+        self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+        self.config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+        self.pipeline.start(self.config)
+        self.depth_sensor =  self.device.query_sensors()[0]   
+        self.hole_filling = rs.hole_filling_filter(1)
+  
+        
     def video(self):
         
-        # ALign the depth frame with the color frame
+        # Align the depth frame with the color frame
         align_to = rs.stream.color
         align = rs.align(align_to)
 
         #  0 - fill_from_left - Use the value from the left neighbor pixel to fill the hole
         #  1 - farest_from_around - Use the value from the neighboring pixel which is furthest away from the sensor 
         #  2 - nearest_from_around - Use the value from the neighboring pixel closest to the sensor
-        hole_filling = rs.hole_filling_filter(0)
 
         # Wait for the camera to initialize. (Startup delay)
         global started
@@ -131,7 +129,7 @@ class ConfigMat:
             print(u"\n\u001b[36mStarting stream\u001b[0m", end="")    
             for i in range(10):
                 print(u"\u001b[36m......", end="")
-                time.sleep(0.05)
+                time.sleep(0.1)
             
                 self.pipeline.wait_for_frames()
             print(u"\n\u001b[32m\u2713 Camera stream started!....\u001b[0m\n")
@@ -139,7 +137,6 @@ class ConfigMat:
             started = 1
         
         # Wait for a new frame
-
         frames = self.pipeline.wait_for_frames()
         # Align the depth frame with the color frame
         aligned_frames = align.process(frames)
@@ -147,7 +144,7 @@ class ConfigMat:
         # From the aligned frames, get depth and color frame
         color_frame = aligned_frames.get_color_frame()
         depth_frame = aligned_frames.get_depth_frame()
-        depth_filled = hole_filling.process(depth_frame)
+        depth_filled = self.hole_filling.process(depth_frame)
         # Convert the color frame to numpy array
         color_image = np.asanyarray(color_frame.get_data())
 
@@ -161,11 +158,10 @@ class ConfigMat:
         self.depth_intrin = depth_frame.profile.as_video_stream_profile().intrinsics
 
         # color_image = np.asanyarray(color_frame.get_data())
-        # color_cvt = np.flip(color_image, 1)  
-        print(color_image, color_image.shape)
+        color_cvt = color_image[:,:,[2,1,0]] 
         
         
-        return color_image, depth_color_image, depth_frame
+        return color_cvt, depth_color_image, depth_frame
 
             
         
