@@ -4,4 +4,4 @@
   
 ![Image](/Demo.png)
 
-- For a robot to grip an object from the container, the orientation of the object ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Obj-Rob}&space;}) with respect to the robot must be known. 
+- For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Obj-Rob}&space;}) must be known. 
