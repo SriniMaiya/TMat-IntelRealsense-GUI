@@ -2,7 +2,7 @@
 
 
 - In robotic pick and place tasks, the robot is equipped with a camera that can detect objects in its environment. There robot must be able to parse the information passed by the camera and determine the location of the object in it's(robot) coordinates. 
-- A GUI has been built to get the Transformation matrix of the table (any plane surface the camera sees) for further calculations to create a Hand Eye Coordination.
+- A GUI has been built to get the Transformation matrix of the table (![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}&space;T_{Table-Camera}})) for further calculations to create a Hand Eye Coordination.
   
 ![Image](/Demo.png)
 
@@ -13,14 +13,11 @@
 
 - The ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Rob-Cam}}) can be obtained as follows.
 
-    - ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Object-Robot}&space;=&space;T_{Object-Table}*T_{Table-Robot}&space;&space;\to&space;(1)&space;&space;})
-    - ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Object-Camera}&space;=&space;T_{Table-Camera}*T_{Object-Table}\to(2)})
-      - ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Object-Table}=T_{Table-Camera}^{-1}*T_{Object-Camera}\to(2.1)})
-  
-- ![](https://latex.codecogs.com/svg.image?-&space;{\color{Cyan}&space;From&space;(1)&space;and&space;(2.1)})
+    - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Object-Table}*T_{Table-Robot}&space;&space;\to&space;(1)&space;&space;})
+    - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Camera}&space;=&space;T_{Table-Camera}*T_{Object-Table}\to(2)})
+      - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Table}=T_{Table-Camera}^{-1}*T_{Object-Camera}\to(2.1)})
+- ![](https://latex.codecogs.com/svg.image?-&space;{\color{DarkOrange}&space;From&space;(1)&space;and&space;(2.1)})
 
-- ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Object-Robot}&space;=&space;T_{Table-Camera}^{-1}*T_{Object-Camera}*T_{Table-Robot}}&space;)
-
+- ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Table-Camera}^{-1}*T_{Object-Camera}*T_{Table-Robot}}&space;)
 
 
-- ![](https://latex.codecogs.com/svg.image?\bg{red}{\color{Blue}&space;\textrm{Test}})
