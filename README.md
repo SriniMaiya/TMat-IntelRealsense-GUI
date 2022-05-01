@@ -20,3 +20,7 @@
 - ![](https://latex.codecogs.com/svg.image?-&space;{\color{Cyan}&space;From&space;(1)&space;and&space;(2.1)})
 
 - ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Object-Robot}&space;=&space;T_{Table-Camera}^{-1}*T_{Object-Camera}*T_{Table-Robot}}&space;)
+
+
+
+- ![](https://latex.codecogs.com/svg.image?\bg{red}{\color{Blue}&space;\textrm{Test}})
