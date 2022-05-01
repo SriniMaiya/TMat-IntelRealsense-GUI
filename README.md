@@ -3,6 +3,7 @@
 
 - In robotic pick and place tasks, the robot is equipped with a camera that can detect objects in its environment. There robot must be able to parse the information passed by the camera and determine the location of the object in it's(robot) coordinates. 
 - A GUI has been built to get the Transformation matrix of the table (![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}&space;T_{Table-Camera}})) for further calculations to create a Hand Eye Coordination.
+
 https://user-images.githubusercontent.com/75990547/166150607-f26ee662-1c7f-4f10-89fd-70e47ec7e033.mp4
  
 ![Image](/Demo.png)
