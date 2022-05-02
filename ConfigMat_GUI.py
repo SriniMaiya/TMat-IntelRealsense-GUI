@@ -42,6 +42,8 @@ def stream():
     depth = np.asfarray(depth, dtype=np.float32)/255
     dpg.set_value("color_tag", color)
     dpg.set_value("depth_tag", depth)
+    dpg.enable_item("BtnStop")
+    dpg.enable_item("click")
 
 
 def trigger_click(sender, value, user_data):
@@ -59,7 +61,7 @@ def trigger_click(sender, value, user_data):
 
 def get_clicks(sender, value, user_data):
     global CLICK, co_ord, depth_frame, matrix
-    if CLICK == 1:
+    if CLICK == 1:  
         pixel = dpg.get_plot_mouse_pos()
         if value[1] == "depth_img" and value[0] == 0:
             pixel = [int(np.round_(x)) for x in pixel]
@@ -82,19 +84,34 @@ def get_clicks(sender, value, user_data):
         dpg.set_value("Print_coords", fstring )
         dpg.delete_item("matrix_table", children_only=True)
 
-    if matrix is not None:
+    if matrix is not None :
         for i in range(4):
             dpg.add_table_column(parent="matrix_table")
         for i in range(4):
             with dpg.table_row(parent="matrix_table"):
                 for j in range(4):
                     dpg.add_text(round(matrix[i][j], 3) )   
+        dpg.enable_item("SaveBtn")
+
 
 def set_camera_config(sender, app_data):
     json_path = app_data["file_path_name"]
     cam_object.load_settings(file_path=json_path)
     dpg.set_value("Loaded", "Done!")
-    
+    if dpg.get_value("Loaded") == "Done!":
+        dpg.enable_item("BtnStart")
+
+def save_matrix(sender, app_data):
+    global matrix
+    save_arr = np.ravel(matrix)
+    file_path = app_data["file_path_name"]
+    with open(file_path, "w") as file:
+        for i, val in enumerate(save_arr, start=1):
+            val = f"{val:.3f} "
+            file.write(val)
+            if i%4 == 0 and i:
+                file.write("\n")
+    dpg.set_value("Saved", "Saved")
 ## Fonts
 font_path = os.path.join("open-sans","OpenSans-Regular.ttf" )
 with dpg.font_registry():
@@ -103,9 +120,12 @@ with dpg.font_registry():
     third_font   = dpg.add_font(file = font_path, size=21)
 
 ## File Dialog
-with dpg.file_dialog(directory_selector=False, show=False, callback=set_camera_config, 
-                        file_count=1, tag="file_dialog_tag", height=800, max_size=[1000, 800]):
+with dpg.file_dialog(directory_selector=False, show=False, callback=set_camera_config, file_count=1, tag="file_dialog_tag", height=800, max_size=[1000, 800]):
     dpg.add_file_extension(".json", color=(255, 255, 0, 255))
+
+with dpg.file_dialog(directory_selector=False, show=False, callback=save_matrix, file_count=1, tag="file_save_tag", height=800, max_size=[1000, 800],
+                                default_filename="Config_Mat",  ):
+    dpg.add_file_extension(".glx", color=(255, 255, 0, 255))
 ## textures
 with dpg.texture_registry():
         dpg.add_raw_texture(width=width, height=height, default_value=color, format=dpg.mvFormat_Float_rgb, tag="color_tag" )
@@ -152,15 +172,19 @@ with dpg.window( pos=[40,200], no_move=True, no_collapse=True, no_title_bar=True
         dpg.add_text(default_value="2. Start streaming.", pos=[40, 90])
         dpg.add_text(default_value="3. Capture a frame.", pos=[40, 170])
         dpg.add_text(default_value="4. Select points", pos = [40, 250 ])
+        dpg.add_text(default_value="5. Save Matrix", pos=[40, 320])
 
     dpg.add_button(label="Camera Config",pos=[40, 40], callback=lambda: dpg.show_item("file_dialog_tag"), width=170 )
     dpg.add_text(default_value="" ,pos=[220, 40],  tag="Loaded" )
-    dpg.add_button(label="Start Camera" , pos=[40, 120], callback= stream, tag= "BtnStart", width=170 )
+    dpg.add_button(label="Start Camera" , pos=[40, 120], callback= stream, tag= "BtnStart", width=170, enabled=False )
     dpg.add_text(default_value="",pos=[220, 120],  tag= "Streaming")
-    dpg.add_button(label="Capture frame", pos=[40, 200], callback= stream, tag= "BtnStop", width=170)
+    dpg.add_button(label="Capture frame", pos=[40, 200], callback= stream, tag= "BtnStop", width=170, enabled=False)
     dpg.add_text(default_value="", pos=[220, 200],  tag="Captured")
-    dpg.add_button(label= "Select Points", pos= [40, 280], callback=trigger_click, user_data=1 , width=170)  
+    dpg.add_button(label= "Select Points", pos= [40, 280], callback=trigger_click, user_data=1 , width=170, enabled=False, tag="click")  
     dpg.add_text(default_value="", pos=[220, 280],  tag="Clicked")
+    dpg.add_button(label="Save matrix", pos=[40, 360],width=170, enabled=False , tag = "SaveBtn", callback=lambda: dpg.show_item("file_save_tag"))
+    dpg.add_text(default_value="", pos=[220, 360],  tag="Saved")
+
 
 
     
@@ -190,13 +214,13 @@ dpg.show_viewport()
 while dpg.is_dearpygui_running():
     if dpg.is_item_clicked("BtnStart"):
         RUN = 1
-    elif dpg.is_item_clicked("BtnStop"):
+    elif dpg.is_item_clicked("BtnStop") and dpg.is_item_enabled("BtnStop"):
         RUN = 0
         dpg.set_value("Captured", "Yes")
         dpg.set_value("Streaming", "")
 
 
-    if RUN == 1:
+    if RUN == 1 and dpg.is_item_enabled("BtnStart"):
         stream()
         dpg.set_value("Streaming", "Yes")
         dpg.set_value("Captured", "")
