@@ -8,9 +8,9 @@ https://user-images.githubusercontent.com/75990547/166150607-f26ee662-1c7f-4f10-
  
 ![Image](/Demo.png)
 
-- For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Obj-Rob}}) must be known. 
+- For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}}) must be known. 
 
-The following equation is obtained as follows,
+The ![](https://latex.codecogs.com/svg.image?\inline&space;&space;{\color{DarkOrange}&space;T_{Object-Robot}&space;&space;}) is obtained as follows,
 
 
 ## Equations:
