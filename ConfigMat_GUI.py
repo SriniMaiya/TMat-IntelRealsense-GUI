@@ -1,14 +1,12 @@
 import dearpygui.dearpygui as dpg
 import numpy as np
 import os
-from concurrent.futures import ThreadPoolExecutor
 
 from Measure_DPG import ConfigMat
 
 
 dpg.create_context()
 dpg.create_viewport(title="Caliberation matrix", height=1080, width=1640)
-dpg.set_viewport_vsync(True)
 dpg.setup_dearpygui()
 
 RUN = 0
@@ -32,10 +30,10 @@ depth = np.zeros(depth.shape)
 
 def stream():
     global depth_frame
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        future = executor.submit(cam_object.video)
-        color, depth, depth_frame = future.result()
-        
+    # with ThreadPoolExecutor(max_workers=4) as executor:
+    #     future = executor.submit(cam_object.video)
+    #     color, depth, depth_frame = future.result()
+    color, depth, depth_frame = cam_object.video()
     color = np.ravel(color)
     depth = np.ravel(depth)
     color = np.asfarray(color, dtype=np.float32)/255
@@ -66,8 +64,6 @@ def get_clicks(sender, value, user_data):
         if value[1] == "depth_img" and value[0] == 0:
             pixel = [int(np.round_(x)) for x in pixel]
             pixel[1] = height - pixel[1]
-            dpg.draw_circle(parent="draw_points", center=[350+ pixel[0]+width+10, pixel[1]],
-                             fill=[255, 255, 255, 255], radius=2, color=[255, 255, 255, 255], thickness=4, )
             
         for key, _ in co_ord.items():
             if co_ord[key] == None:
@@ -103,6 +99,7 @@ def set_camera_config(sender, app_data):
 
 def save_matrix(sender, app_data):
     global matrix
+    dpg.set_value("Saved", "")
     save_arr = np.ravel(matrix)
     file_path = app_data["file_path_name"]
     with open(file_path, "w") as file:
@@ -111,13 +108,14 @@ def save_matrix(sender, app_data):
             file.write(val)
             if i%4 == 0 and i:
                 file.write("\n")
-    dpg.set_value("Saved", "Saved")
+    dpg.set_value("Saved", "Saved!")
 ## Fonts
 font_path = os.path.join("open-sans","OpenSans-Regular.ttf" )
+
 with dpg.font_registry():
     default_font = dpg.add_font(file = font_path, size=30)
     second_font  = dpg.add_font(file = font_path, size=24)
-    third_font   = dpg.add_font(file = font_path, size=21)
+    # third_font   = dpg.add_font(file = font_path, size=21)
 
 ## File Dialog
 with dpg.file_dialog(directory_selector=False, show=False, callback=set_camera_config, file_count=1, tag="file_dialog_tag", height=800, max_size=[1000, 800]):
@@ -144,22 +142,20 @@ with dpg.window(label="Camera Stream", autosize=True, pos=[350, 0], no_move=True
             dpg.add_plot_axis(dpg.mvXAxis, no_tick_labels=True, no_gridlines=True, no_tick_marks=True)
             with dpg.plot_axis(dpg.mvYAxis, no_tick_labels=True, no_gridlines=True, no_tick_marks=True):
                 dpg.add_image_series("depth_tag",[0,0],[width,height], tag = "depth_window")
-    with dpg.drawlist( tag="draw_points", show=True, parent="depth_window", width=width, height=height ):
-        pass
-
     
     with dpg.group():
         dpg.add_text(default_value="Color Stream" ,pos=[int(width/2)-80, height + 50] )
         dpg.add_text(default_value="Depth Stream" ,pos=[int(width/2)+width-80, height + 50] )
         dpg.add_separator()
-    dpg.add_text(default_value="", pos = [width + 50, height + 130], tag = "Print_coords")
-
-    with dpg.group(horizontal = False, tag = "Print_matrix"):
-        dpg.add_text(default_value="Transformation Matrix: ", pos=[20, height+130])
-        # dpg.add_text(default_value="", tag="Matrix", pos = [20, height+160])
+        dpg.add_text(default_value="", pos = [width + 50, height + 130], tag = "Print_coords")
+        dpg.add_text(default_value="Transformation Matrix: ", pos=[20, height+130], tag="matrix")
+        dpg.bind_item_font("Print_coords", second_font)
+        dpg.bind_item_font("matrix", second_font)
+ 
 
     with dpg.table(label="Transformation Matrix", header_row=False, tag="matrix_table", pos = [40, height+160],
                              width=300, borders_innerH=True, borders_innerV=True, resizable=False):
+        # dpg.bind_item_font("matrix_table", second_font)
         pass
 
 
@@ -173,12 +169,15 @@ with dpg.window( pos=[40,200], no_move=True, no_collapse=True, no_title_bar=True
         dpg.add_text(default_value="3. Capture a frame.", pos=[40, 170])
         dpg.add_text(default_value="4. Select points", pos = [40, 250 ])
         dpg.add_text(default_value="5. Save Matrix", pos=[40, 320])
+    dpg.bind_item_font("Btn_instruction", second_font)
+
 
     dpg.add_button(label="Camera Config",pos=[40, 40], callback=lambda: dpg.show_item("file_dialog_tag"), width=170 )
+    # dpg.bind_item_font("file_dialog_tag", second_font)
     dpg.add_text(default_value="" ,pos=[220, 40],  tag="Loaded" )
-    dpg.add_button(label="Start Camera" , pos=[40, 120], callback= stream, tag= "BtnStart", width=170, enabled=False )
+    dpg.add_button(label="Start Camera" , pos=[40, 120], tag= "BtnStart", width=170, enabled=False )
     dpg.add_text(default_value="",pos=[220, 120],  tag= "Streaming")
-    dpg.add_button(label="Capture frame", pos=[40, 200], callback= stream, tag= "BtnStop", width=170, enabled=False)
+    dpg.add_button(label="Capture frame", pos=[40, 200], tag= "BtnStop", width=170, enabled=False)
     dpg.add_text(default_value="", pos=[220, 200],  tag="Captured")
     dpg.add_button(label= "Select Points", pos= [40, 280], callback=trigger_click, user_data=1 , width=170, enabled=False, tag="click")  
     dpg.add_text(default_value="", pos=[220, 280],  tag="Clicked")
@@ -196,17 +195,10 @@ dpg.bind_item_handler_registry("BtnStop", "Button_reg" )
 
 with dpg.item_handler_registry(tag = "Plot_reg"):
     dpg.add_item_clicked_handler(tag = "Image_reg", callback=get_clicks)
-
 dpg.bind_item_handler_registry("depth_img", "Plot_reg")
 
+
 dpg.bind_font(default_font)
-dpg.bind_item_font("Print_coords", second_font)
-dpg.bind_item_font("file_dialog_tag", second_font)
-dpg.bind_item_font("Btn_instruction", third_font)
-dpg.bind_item_font("matrix_table", second_font)
-dpg.bind_item_font("Print_matrix", second_font)
-
-
 dpg.show_viewport()
 
 
@@ -224,8 +216,8 @@ while dpg.is_dearpygui_running():
         stream()
         dpg.set_value("Streaming", "Yes")
         dpg.set_value("Captured", "")
-
-
+    
     dpg.render_dearpygui_frame()
+
 
 dpg.destroy_context()
