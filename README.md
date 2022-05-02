@@ -10,16 +10,12 @@ https://user-images.githubusercontent.com/75990547/166150607-f26ee662-1c7f-4f10-
 
 - For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Obj-Rob}}) must be known. 
 
-<<<<<<< Updated upstream
     - As the location of the object is percieved by the camera, a connection between the camera and the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Rob-Cam}}) is necessary for the robot to parse the pixel information from the image into robot coordinates.
 
 
 
 
 
-=======
-    - As the location of the object is percieved by the camera, a connection between the camera and the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Rob-Cam}}) is necessary for the robot to parse the pixel information from the image into robot coordinates.
->>>>>>> Stashed changes
 ## Equations:
 
 - The ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Rob-Cam}}) can be obtained as follows.
