@@ -16,7 +16,11 @@ class ConfigMat:
         self.ords = {"o":None, "ox": None, "oy": None } 
         
         wrapper = rs.pipeline_wrapper(self.pipeline)
-        self.profile = self.config.resolve(wrapper)
+        try:
+            self.profile = self.config.resolve(wrapper) 
+        except RuntimeError as e:
+            print(u"\u001b[31m"+"No device connected"+u"\u001b[0m")
+            exit(0)
         
         # Gets the all avaiable devices
         self.device = self.profile.get_device()
@@ -26,7 +30,7 @@ class ConfigMat:
         found_rgb = False
         for s in self.device.sensors:
             if s.get_info(rs.camera_info.name) == "RGB Camera": found_rgb = True
-        if not found_rgb: print(u"\u001b[32m"+u"-> RGB camera not found!"+"\u001b[0m")
+        if not found_rgb: print(u"\u001b[31m"+u"-> RGB camera not found!"+"\u001b[0m")
         
         #Enable depth stream of the camera
         self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)

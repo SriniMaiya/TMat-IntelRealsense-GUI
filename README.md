@@ -8,17 +8,21 @@ https://user-images.githubusercontent.com/75990547/166150607-f26ee662-1c7f-4f10-
  
 ![Image](/Demo.png)
 
-- For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Obj-Rob}}) must be known. 
+- For a robot to grip an object from the container, the orientation of the object with respect to the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Obj-Rob}}) must be known. 
 
+<<<<<<< Updated upstream
     - As the location of the object is percieved by the camera, a connection between the camera and the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Rob-Cam}}) is necessary for the robot to parse the pixel information from the image into robot coordinates.
 
 
 
 
 
+=======
+    - As the location of the object is percieved by the camera, a connection between the camera and the robot, i.e. ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Rob-Cam}}) is necessary for the robot to parse the pixel information from the image into robot coordinates.
+>>>>>>> Stashed changes
 ## Equations:
 
-- The ![](https://latex.codecogs.com/svg.image?{\color{Cyan}T_{Rob-Cam}}) can be obtained as follows.
+- The ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Rob-Cam}}) can be obtained as follows.
 
     - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Object-Table}*T_{Table-Robot}&space;&space;\to&space;(1)&space;&space;})
     - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Camera}&space;=&space;T_{Table-Camera}*T_{Object-Table}\to(2)})
