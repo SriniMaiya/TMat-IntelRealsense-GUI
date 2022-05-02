@@ -18,13 +18,12 @@ https://user-images.githubusercontent.com/75990547/166150607-f26ee662-1c7f-4f10-
 
 ## Equations:
 
-- The ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Rob-Cam}}) can be obtained as follows.
 
-    - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Object-Table}*T_{Table-Robot}&space;&space;\to&space;(1)&space;&space;})
-    - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Camera}&space;=&space;T_{Table-Camera}*T_{Object-Table}\to(2)})
-      - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Table}=T_{Table-Camera}^{-1}*T_{Object-Camera}\to(2.1)})
-- ![](https://latex.codecogs.com/svg.image?-&space;{\color{DarkOrange}&space;From&space;(1)&space;and&space;(2.1)})
+  - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Object-Table}*T_{Table-Robot}&space;&space;\to&space;(1)&space;&space;})
+  - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Camera}&space;=&space;T_{Table-Camera}*T_{Object-Table}\to(2)})
+    - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Table}=T_{Table-Camera}^{-1}*T_{Object-Camera}\to(2.1)})
 
+![](https://latex.codecogs.com/svg.image?&space;{\color{DarkOrange}&space;\textup{Substituting&space;(2.1)&space;in&space;(1)}&space;&space;})
 - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Table-Camera}^{-1}*T_{Object-Camera}*T_{Table-Robot}}&space;)
 
 
