@@ -50,7 +50,6 @@ def stream():
     dpg.set_value("ir_tag", ir)
 
     dpg.enable_item("BtnStop")
-    dpg.enable_item("click")
 
 
 def trigger_click(sender, value, user_data):
@@ -72,6 +71,31 @@ def trigger_click(sender, value, user_data):
         nClicks = 0
 
 
+def crosshair(sender, app_data, user_data):
+    try:
+        dpg.delete_item("temp")
+    except:
+        pass
+
+    pixel = dpg.get_plot_mouse_pos()
+    if app_data == "color_img":
+        reciever = "depth_img"
+    else:
+        reciever = "color_img"
+    if dpg.is_item_hovered(app_data):
+        dpg.add_plot_annotation(
+            parent=reciever,
+            label=" + ",
+            default_value=pixel,
+            clamped=False,
+            tag="temp",
+            color=(128, 0, 128, 80),
+        )
+
+    if dpg.is_item_left_clicked(app_data):
+        get_clicks()
+
+
 def get_clicks():
     global CLICK, co_ord, depth_frame, matrix, nClicks
     if CLICK == 1:
@@ -91,7 +115,7 @@ def get_clicks():
             if co_ord[key] == None:
                 co_ord[key] = pixel
                 break
-        fstring = f"Registered points: \nO  :  {co_ord['O']}\tO->X  :  {co_ord['OX']}\tO->Y  :  {co_ord['OY']}   "
+        fstring = f"Registered points: \nO  :  {co_ord['O']}\tO->X : {co_ord['OX']}\tO->Y : {co_ord['OY']}   "
         dpg.set_value("Print_coords", fstring)
         nClicks += 1
 
@@ -99,7 +123,7 @@ def get_clicks():
         dpg.set_value("Clicked", "Done!")
         matrix = cam_object.calculate_distance(ords=co_ord, depth_frame=depth_frame)
         CLICK = 0
-        fstring = f"Registered points: \nO  :  {co_ord['O']}\tO->X  :  {co_ord['OX']}\tO->Y  :  {co_ord['OY']}   "
+        fstring = f"Registered points: \nO  :  {co_ord['O']}\tO->X : {co_ord['OX']}\tO->Y : {co_ord['OY']}   "
         dpg.set_value("Print_coords", fstring)
         dpg.delete_item("matrix_table", children_only=True)
 
@@ -181,31 +205,6 @@ def stream_button(sender, app_data, user_data):
         )
         dpg.bind_item_theme("BtnIR", disabled_theme)
         dpg.bind_item_theme("BtnColor", enabled_theme)
-
-
-def crosshair(sender, app_data, user_data):
-    try:
-        dpg.delete_item("temp")
-    except:
-        pass
-
-    pixel = dpg.get_plot_mouse_pos()
-    if app_data == "color_img":
-        reciever = "depth_img"
-    else:
-        reciever = "color_img"
-    if dpg.is_item_hovered(app_data):
-        dpg.add_plot_annotation(
-            parent=reciever,
-            label=" + ",
-            default_value=pixel,
-            clamped=False,
-            tag="temp",
-            color=(128, 0, 128, 80),
-        )
-
-    if dpg.is_item_left_clicked(app_data):
-        get_clicks()
 
 
 with dpg.font_registry():
@@ -354,9 +353,11 @@ with dpg.window(
         header_row=False,
         tag="matrix_table",
         pos=[40, height + 160],
-        width=300,
+        width=350,
         borders_innerH=True,
         borders_innerV=True,
+        borders_outerH=True,
+        borders_outerV=True,
         resizable=False,
     ):
         pass
@@ -373,60 +374,54 @@ with dpg.window(
     autosize=True,
 ):
     with dpg.group(horizontal=False, tag="Btn_instruction"):
-        dpg.add_text(default_value="1. Load Camera settings.", pos=[40, 10])
-        dpg.add_text(default_value="2. Start streaming.", pos=[40, 90])
-        dpg.add_text(default_value="3. Capture a frame.", pos=[40, 170])
-        dpg.add_text(default_value="4. Select points", pos=[40, 250])
-        dpg.add_text(default_value="5. Save Matrix", pos=[40, 320])
+        dpg.add_text(default_value="1. Load Camera settings.", pos=[20, 10])
+        dpg.add_text(default_value="2. Start streaming.", pos=[20, 90])
+        dpg.add_text(default_value="3. Capture a frame.", pos=[20, 170])
+        dpg.add_text(default_value="4. Select points", pos=[20, 250])
+        dpg.add_text(default_value="5. Save Matrix", pos=[20, 330])
     dpg.bind_item_font("Btn_instruction", second_font)
 
     dpg.add_button(
         label="Camera Config",
-        pos=[40, 40],
+        pos=[20, 40],
         callback=lambda: dpg.show_item("file_dialog_tag"),
-        width=170,
+        width=200,
     )
     # dpg.bind_item_font("file_dialog_tag", second_font)
-    dpg.add_text(default_value="", pos=[220, 40], tag="Loaded")
+    dpg.add_text(default_value="", pos=[230, 40], tag="Loaded")
     dpg.add_button(
-        label="Start Camera", pos=[40, 120], tag="BtnStart", width=170, enabled=False
+        label="Start Camera", pos=[20, 120], tag="BtnStart", width=200, enabled=False
     )
-    dpg.add_text(default_value="", pos=[220, 120], tag="Streaming")
+    dpg.add_text(default_value="", pos=[230, 120], tag="Streaming")
     dpg.add_button(
-        label="Capture frame", pos=[40, 200], tag="BtnStop", width=170, enabled=False
+        label="Capture frame", pos=[20, 200], tag="BtnStop", width=200, enabled=False
     )
-    dpg.add_text(default_value="", pos=[220, 200], tag="Captured")
+    dpg.add_text(default_value="", pos=[230, 200], tag="Captured")
     dpg.add_button(
         label="Select Points",
-        pos=[40, 280],
+        pos=[20, 280],
         callback=trigger_click,
         user_data=1,
-        width=170,
+        width=200,
         enabled=False,
         tag="click",
     )
-    dpg.add_text(default_value="", pos=[220, 280], tag="Clicked")
+    dpg.add_text(default_value="", pos=[230, 280], tag="Clicked")
     dpg.add_button(
         label="Save matrix",
-        pos=[40, 360],
-        width=170,
+        pos=[20, 360],
+        width=200,
         enabled=False,
         tag="SaveBtn",
         callback=lambda: dpg.show_item("file_save_tag"),
     )
-    dpg.add_text(default_value="", pos=[220, 360], tag="Saved")
+    dpg.add_text(default_value="", pos=[230, 360], tag="Saved")
 
 
 with dpg.item_handler_registry(tag="Button_reg") as reg:
-    dpg.add_item_clicked_handler()
+    dpg.add_item_clicked_handler(button=1)
 dpg.bind_item_handler_registry("BtnStart", "Button_reg")
 dpg.bind_item_handler_registry("BtnStop", "Button_reg")
-
-with dpg.item_handler_registry(tag="Plot_reg"):
-    dpg.add_item_clicked_handler(tag="Image_reg", callback=get_clicks)
-dpg.bind_item_handler_registry("depth_img", "Plot_reg")
-dpg.bind_item_handler_registry("color_img", "Plot_reg")
-
 
 with dpg.item_handler_registry(tag="hover_reg"):
     dpg.add_item_hover_handler(callback=crosshair)
@@ -445,6 +440,8 @@ while dpg.is_dearpygui_running():
         RUN = 0
         dpg.set_value("Captured", "Yes")
         dpg.set_value("Streaming", "")
+        if not dpg.is_item_enabled("click"):
+            dpg.enable_item("click")
 
     if RUN == 1 and dpg.is_item_enabled("BtnStart"):
         stream()
