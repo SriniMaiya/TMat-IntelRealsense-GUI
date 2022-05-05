@@ -106,8 +106,8 @@ class ConfigMat:
                     )
                 return dev
         raise Exception(
-            "->\u001b[31m"
-            + "No D400 product line device that supports advanced mode was found"
+            "\u001b[31m"
+            + "->No D400 product line device that supports advanced mode was found"
             + "\u001b[0m"
         )
 
