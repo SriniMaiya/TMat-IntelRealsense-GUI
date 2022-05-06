@@ -6,7 +6,8 @@ import numpy as np
 from Measure_DPG import ConfigMat
 
 dpg.create_context()
-dpg.create_viewport(title="Caliberation matrix", height=1080, width=1640)
+dpg.create_viewport(title="Caliberation matrix", height=1080,
+                    width=1640, large_icon=os.path.join("assets", "Icon.ico"))
 dpg.setup_dearpygui()
 
 RUN = 0
@@ -121,7 +122,8 @@ def get_clicks():
 
     if all(co_ord.values()):
         dpg.set_value("Clicked", "Done!")
-        matrix = cam_object.calculate_distance(ords=co_ord, depth_frame=depth_frame)
+        matrix = cam_object.calculate_distance(
+            ords=co_ord, depth_frame=depth_frame)
         CLICK = 0
         fstring = f"Registered points: \nO  :  {co_ord['O']}\tO->X : {co_ord['OX']}\tO->Y : {co_ord['OY']}   "
         dpg.set_value("Print_coords", fstring)
@@ -155,10 +157,6 @@ def save_matrix(sender, app_data):
             val = f"{val:.3f} "
             file.write(val)
     dpg.set_value("Saved", "Saved!")
-
-
-## Fonts
-font_path = os.path.join("open-sans", "OpenSans-Regular.ttf")
 
 
 def stream_button(sender, app_data, user_data):
@@ -207,6 +205,9 @@ def stream_button(sender, app_data, user_data):
         dpg.bind_item_theme("BtnColor", enabled_theme)
 
 
+# Fonts
+font_path = os.path.join("assets", "OpenSans-Regular.ttf")
+
 with dpg.font_registry():
     default_font = dpg.add_font(file=font_path, size=30)
     second_font = dpg.add_font(file=font_path, size=24)
@@ -224,7 +225,7 @@ with dpg.theme() as disabled_theme:
             dpg.mvThemeCol_Text, (255, 0, 0), category=dpg.mvThemeCat_Core
         )
 
-## File Dialog
+# File Dialog
 with dpg.file_dialog(
     directory_selector=False,
     show=False,
@@ -247,7 +248,7 @@ with dpg.file_dialog(
     default_filename="Target_Cam",
 ):
     dpg.add_file_extension(".trf", color=(255, 255, 0, 255))
-## textures
+# textures
 with dpg.texture_registry():
     dpg.add_raw_texture(
         width=width,
@@ -272,7 +273,7 @@ with dpg.texture_registry():
     )
 
 
-## Stream Window
+# Stream Window
 with dpg.window(
     label="Camera Stream",
     autosize=True,
@@ -296,7 +297,8 @@ with dpg.window(
             with dpg.plot_axis(
                 dpg.mvYAxis, no_tick_labels=True, no_gridlines=True, no_tick_marks=True
             ):
-                dpg.add_image_series("color_tag", [0, 0], [width, height], tag="col")
+                dpg.add_image_series("color_tag", [0, 0], [
+                                     width, height], tag="col")
 
         with dpg.plot(
             equal_aspects=True,
@@ -363,7 +365,7 @@ with dpg.window(
         pass
 
 
-## Button Window
+# Button Window
 with dpg.window(
     pos=[40, 200],
     no_move=True,
