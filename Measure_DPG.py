@@ -55,6 +55,9 @@ class ConfigMat:
         )
 
     def get_a_frame(self) -> list:
+        """
+        Get a single frame to setup the GUI, then stop
+        """
         align_to = rs.stream.depth
         align = rs.align(align_to)
         for i in range(10):
@@ -74,6 +77,10 @@ class ConfigMat:
         return [color_image, ir_image, depth_color_image]
 
     def find_device_that_supports_advanced_mode(self) -> None:
+        """
+        Find if the camera supports advanced mode
+        https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/python-rs400-advanced-mode-example.py
+        """
         DS5_product_ids = [
             "0AD1",
             "0AD2",
@@ -112,6 +119,9 @@ class ConfigMat:
         )
 
     def load_settings(self, file_path: str):
+        """
+        Parses the JSON file
+        """
         with open(file_path) as file:
             as_json_object = json.load(file)
             if type(next(iter(as_json_object))) != str:
@@ -120,7 +130,7 @@ class ConfigMat:
                     for k, v in as_json_object.items()
                 }
             json_string = str(as_json_object).replace("'", '"')
-
+        # Find a device that supports advanced mode
         try:
             dev = self.find_device_that_supports_advanced_mode()
             advnc_mode = rs.rs400_advanced_mode(dev)
@@ -145,20 +155,22 @@ class ConfigMat:
                     if advnc_mode.is_enabled()
                     else "disabled" + "\u001b[0m",
                 )
+        # If no device supports advanced mode, throw error
         except Exception as e:
             print("\u001b[31m" + "No devices found with advanced mode !" + "\u001b[0m")
             print(e)
             pass
 
         print("\n\u001b[36m" + "Loading the settings......" + "\u001b[0m")
+        # Load the json file
         advnc_mode.load_json(json_string)
         self.pipeline = rs.pipeline()
         self.config = rs.config()
         print("\u001b[32m\u2713" + " Settings loaded" + "\u001b[0m\n")
 
         wrapper = rs.pipeline_wrapper(self.pipeline)
-        self.profile = self.config.resolve(wrapper)
 
+        self.profile = self.config.resolve(wrapper)
         self.config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
         self.config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 30)
         self.config.enable_stream(rs.stream.infrared, 640, 480, rs.format.rgb8, 30)
@@ -176,7 +188,7 @@ class ConfigMat:
         #  1 - farest_from_around - Use the value from the neighboring pixel which is furthest away from the sensor
         #  2 - nearest_from_around - Use the value from the neighboring pixel closest to the sensor
 
-        # Wait for the camera to initialize. (Startup delay)
+        # Wait for the camera to initialize.
         global started
         if not started:
             print("\n\u001b[36mStarting stream\u001b[0m", end="")
@@ -184,7 +196,10 @@ class ConfigMat:
                 print("\u001b[36m......", end="")
                 time.sleep(0.1)
 
-                self.pipeline.wait_for_frames()
+                _ = self.pipeline.wait_for_frames()
+
+                if _:
+                    break
             print("\n\u001b[32m\u2713 Camera stream started!....\u001b[0m\n")
 
             started = 1
@@ -261,8 +276,10 @@ class ConfigMat:
             map(operator.sub, self.point_X, self.point_O)
         )  # Similar to [a-b for a,b in zip(self.point_X, self.point_Y)]
         vecOY = list(map(operator.sub, self.point_Y, self.point_O))
-
+        # Calculate the Z vector
         vecOZ = np.cross(vecOX, vecOY)
+        # Recalibrate Y vector
+        vecOY = np.cross(vecOZ, vecOX)
 
         uvecOX, uvecOY, uvecOZ = [], [], []
         # Unitvectors of OX & OY &OZ
