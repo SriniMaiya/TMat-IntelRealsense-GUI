@@ -37,11 +37,14 @@ COL_FRAME, IR_FRAME, DEP_FRAME = cam_object.get_a_frame()
 WIDTH = DEP_FRAME.shape[1]
 HEIGHT = DEP_FRAME.shape[0]
 # Color image array for initialization of GUI
-COLOR = np.zeros(shape=(WIDTH * HEIGHT, 1))
+COLOR = np.ravel(COL_FRAME)
+COLOR = np.zeros(COLOR.shape)
 # Depth image array for initialization of GUI
-DEPTH = np.zeros(shape=(WIDTH * HEIGHT, 1))
+DEPTH = np.ravel(DEP_FRAME)
+DEPTH = np.zeros(DEPTH.shape)
 # Infrared image array for initialization of GUI
-IR = np.zeros(shape=(WIDTH * HEIGHT, 1))
+IR = np.ravel(IR_FRAME)
+IR = np.zeros(IR.shape)
 
 ##################################################
 ################ Stream functions ################
@@ -53,16 +56,17 @@ def stream():
     Get camera frames and display on the stream window
     """
     # Clear the plot annotations when streaming
-    try:
-        for i in ID:
-            dpg.delete_item(i)
-    except:
-        pass
 
-    global DEP_FRAME
+    for i in ID:
+        if dpg.does_item_exist(i):
+            dpg.delete_item(i)
+
+    global DEP_FRAME, CO_ORD
     # Get COLOR, DEPTH and infrared frames
     COLOR, IR, DEPTH, DEP_FRAME = cam_object.video()
-
+    CO_ORD = {"O": None, "OX": None, "OY": None}
+    dpg.set_value("Clicked", "0")
+    dpg.delete_item("matrix_table", children_only=True)
     # Convert the frame to a list
     COLOR = np.ravel(COLOR)
     DEPTH = np.ravel(DEPTH)
@@ -100,11 +104,10 @@ def trigger_click(sender, value, user_data):
         # Set the Info Item-"Select Point" to 0
         dpg.set_value("Clicked", "0")
 
-        try:
-            for i in ID:
+        
+        for i in ID:
+            if dpg.does_item_exist(i):
                 dpg.delete_item(i)
-        except:
-            pass
         # Set variable NCLICKS to 0
         NCLICKS = 0
 
@@ -176,10 +179,9 @@ def crosshair(sender, app_data, user_data):
     -> Called by: hover handler.
     """
     # delete the previous crosshair if present
-    try:
+    if dpg.does_item_exist("temp"):
         dpg.delete_item("temp")
-    except:
-        pass
+
     # Get present mouse position
     pixel = dpg.get_plot_mouse_pos()
     # If the mouse is hovering in the color image
