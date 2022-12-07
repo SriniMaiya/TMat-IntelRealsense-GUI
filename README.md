@@ -29,4 +29,4 @@ The ![](https://latex.codecogs.com/svg.image?\inline&space;&space;{\color{DarkOr
 
 
 Compile the executable with the following code using ![Nuitka](https://nuitka.net/) library. 
-'''python -m nuitka --lto=no --onefile --windows-icon-from-ico=./assets/Icon.ico --plugin-enable=numpy --enable-plugin=anti-bloat --noinclude-pytest-mode=nofollow --noinclude-setuptools-mode=nofollow --plugin-enable=pylint-warnings .\ConfigMat_GUI.py'''
+```python -m nuitka --lto=no --onefile --windows-icon-from-ico=./assets/Icon.ico --plugin-enable=numpy --enable-plugin=anti-bloat --noinclude-pytest-mode=nofollow --noinclude-setuptools-mode=nofollow --plugin-enable=pylint-warnings .\ConfigMat_GUI.py``
