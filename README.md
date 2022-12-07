@@ -28,3 +28,5 @@ The ![](https://latex.codecogs.com/svg.image?\inline&space;&space;{\color{DarkOr
 - ![](https://latex.codecogs.com/svg.image?{\color{DarkOrange}T_{Object-Robot}&space;=&space;T_{Table-Camera}^{-1}*T_{Object-Camera}*T_{Table-Robot}}&space;)
 
 
+Compile the executable with the following code using ![Nuitka](https://nuitka.net/) library. 
+'''python -m nuitka --lto=no --onefile --windows-icon-from-ico=./assets/Icon.ico --plugin-enable=numpy --enable-plugin=anti-bloat --noinclude-pytest-mode=nofollow --noinclude-setuptools-mode=nofollow --plugin-enable=pylint-warnings .\ConfigMat_GUI.py'''
